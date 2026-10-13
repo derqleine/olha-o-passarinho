@@ -1,260 +1,123 @@
+<?php
+require __DIR__ . '/db.php';
+$db = getDb();
+
+// Categories are stored with a trailing "/" (e.g. "12IF/")
+$categorias = $db->query("SELECT DISTINCT categoria FROM fotografias ORDER BY categoria")->fetchAll(PDO::FETCH_COLUMN);
+$categorias = array_map(fn($categoria) => str_replace('/', '', $categoria), $categorias);
+
+// "Coletivo" was the old name for "all photos"
+$categoriaAtual = $_GET['categoria'] ?? '';
+if ($categoriaAtual === 'Coletivo') {
+  $categoriaAtual = '';
+}
+
+if ($categoriaAtual !== '') {
+  $stmt = $db->prepare("SELECT categoria, fotoMoldura, fotoMolduraCharacter FROM fotografias WHERE categoria = ? ORDER BY id DESC");
+  $stmt->execute([$categoriaAtual . "/"]);
+} else {
+  $stmt = $db->query("SELECT categoria, fotoMoldura, fotoMolduraCharacter FROM fotografias ORDER BY id DESC");
+}
+
+$fotos = array();
+foreach ($stmt as $row) {
+  // Show the photo with the character if there is one, otherwise the framed photo
+  $foto = !empty($row['fotoMolduraCharacter']) ? $row['fotoMolduraCharacter'] : $row['fotoMoldura'];
+  $fotos[] = UPLOADS_DIR . $row['categoria'] . $foto;
+}
+
+function e($texto)
+{
+  return htmlspecialchars($texto);
+}
+
+$chip = 'shrink-0 rounded-full px-4 py-1.5 text-sm font-medium transition-colors';
+$chipAtivo = $chip . ' bg-brand text-white shadow-sm';
+$chipInativo = $chip . ' bg-zinc-100 text-zinc-700 hover:bg-zinc-200';
+?>
 <!DOCTYPE html>
 <html lang="pt-PT">
 <head>
-<title>Projeto ExpoCIC</title>
-<link rel="icon" type="image/x-icon" href="assets/logo_ExpoCIC.png">
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-<style>
-/* width */
-::-webkit-scrollbar {
-  width: 10px;
-}
-
-/* Track */
-::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-}
- 
-/* Handle */
-::-webkit-scrollbar-thumb {
-  background: #888; 
-}
-
-/* Handle on hover */
-::-webkit-scrollbar-thumb:hover {
-  background: #555; 
-}
-
-body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-.w3-third img{margin-bottom: -6px; opacity: 0.8; cursor: pointer}
-.w3-third img:hover{opacity: 1}
-
-.downloadButton {
-  background-color: #4CAF50; /* Set a cool green color */
-  border: none;
-  color: white;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 16px;
-  font-weight: bold;
-  border-radius: 5px;
-  transition: background-color 0.3s ease; /* Add a smooth transition */
-}
-
-.downloadButton:hover {
-  background-color: #3e8e41; /* Darken the color on hover */
-}
-
-.ver-mais {
-  border: none;
-  color: white;
-  width:100%;
-  text-align: center;
-  margin-top:5px;
-  text-decoration: underline;
-  display: inline-block;
-  font-size: 16px;
-  cursor: pointer;
-  color:black;
-}
-
-.ver-mais:hover {
-  background-color: gray;
-  color:white
-}
-</style>
-<script>
-
-
-var start = 0;
-var numToShow = 9;
-var nImgs = 0;
-function showMoreImages() {
-  // Get the slice of the array to show
-  var imagePaths = JSON.parse(document.getElementById('imagePaths').value);
-  var observacoes = JSON.parse(document.getElementById('observacoes').value);
-
-  var imageSlice = imagePaths.slice(start, start + numToShow);
-  
-  // Loop through the slice and create an img element for each image path
-  var container = document.getElementById('imageContainer');
-  for (var i = 0; i < imageSlice.length; i++) {
-    // Create a new div every 3 images
-    if (i % 3 == 0) {
-      var div = document.createElement('div');
-      div.className = 'w3-third';
-      container.appendChild(div);
-    }
-    nImgs++;
-    // Create a new img element with the specified attributes
-    var img = document.createElement('img');
-    img.src = imageSlice[i];
-    img.style.width = '100%';
-    img.onclick = function() {
-      onClick(this);
-    };
-    
-    // Add the img element to the current div
-    div.appendChild(img);
-  }
-  
-  // Update the start index for the next slice
-  start += numToShow;
-  if(nImgs >= imagePaths.length) {
-
-    document.getElementById("divMais").style.display = "none";
-  }
-}
-
-
-// Script to open and close sidebar
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("mySidebar").style.width = "50%";
-  document.getElementById("myOverlay").style.display = "block";
-}
- 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-  document.getElementById("mySidebar").style.width = "15vw";
-}
-
-// Modal Image Gallery
-function onClick(element) {
-  document.getElementById("downloadButton").href = element.src;
-  document.getElementById("img01").src = element.src;
-  document.getElementById("modal01").style.display = "block";
-  var captionText = document.getElementById("caption");
-  captionText.innerHTML = element.alt;
-}
-
-</script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Olha o passarinho! · ExpoCIC 2023</title>
+  <link rel="icon" type="image/png" href="assets/logo_ExpoCIC.png">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script src="assets/js/gallery.js" defer></script>
 </head>
-<body class="w3-light-grey">
+<body class="flex min-h-screen flex-col bg-zinc-50 text-zinc-900 antialiased">
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-bar-block w3-white w3-animate-left w3-text-grey w3-collapse w3-top w3-center" style="z-index:3;width:15vw;font-weight:bold" id="mySidebar"><br>
-<img class="img-fluid" style="margin:auto;" src="assets/logo_ExpoCIC.png" width="300px" >  
-<h3 class="w3-padding-32 w3-center">Projeto ExpoCIC<br>Polaroid</b></h3>
-<div id="sidebarContent">
-  <!-- max-height:60% -->
-  <div id="categorias" style="max-height: 60%; overflow-y: auto;">
-    <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-padding w3-hide-large">CLOSE</a>
-
-    <a href="?categoria=Coletivo" onclick="w3_close()" class="w3-bar-item w3-button">Coletivo</a> 
-    <?php
-    
-      require __DIR__ . '/db.php';
-      $db = getDb();
-
-      // retrieve distinct categories from the fotografias table
-      $categorias = $db->query("SELECT DISTINCT categoria FROM fotografias")->fetchAll(PDO::FETCH_COLUMN);
-
-      // check for results
-      if (count($categorias) > 0) {
-        // loop through results and print each category
-        foreach ($categorias as $categoria) {
-          $categoria = str_replace('/', '', $categoria);
-          // Escape the name so it can't inject HTML/JavaScript into the page
-          $link = htmlspecialchars('?categoria=' . urlencode($categoria));
-          echo '<a href="' . $link . '" onclick="w3_close()" class="w3-bar-item w3-button">' . htmlspecialchars($categoria) . '</a>';
-        }
-      } else {
-        echo "No categories found.";
-      }
-      
-    ?>
-
-  </div>
-  <div style="height:4vh;position:absolute;bottom:0;width:100%;border-top:solid 2px gray;background-color:white;" class="w3-center w3-padding-30">Afonso Saraiva e Gabriel Sousa</div>
-</div>
-</nav>
-
-<!-- Top menu on small screens -->
-<header class="w3-container w3-top w3-hide-large w3-white w3-xlarge w3-padding-16">
-
-  <span class="w3-left w3-padding" style="font-size:21px;">Projeto ExpoCIC - Polaroid</span>
-  <a href="javascript:void(0)" class="w3-right w3-button w3-white" onclick="w3_open()">☰</a>
-</header>
-
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
-
-<!-- !PAGE CONTENT! -->
-
-<div class="w3-main" style="margin-left:15vw">
-
-  <!-- Push down content on small screens -->
-   
-  <div class="w3-hide-large" style="margin-top:83px"></div>
-  
-  <!-- Photo grid -->
-  <div id = "imageContainer" class="w3-row">
-    
-    <?php 
-
-      $array_fotos = array();
-      $array_observacoes = array();
-      // Make the query to the database
-      if (isset($_GET['categoria']) && $_GET['categoria'] != "Coletivo") {
-        $stmt = $db->prepare("SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE categoria = ?");
-        $stmt->execute([$_GET['categoria'] . "/"]);
-      }
-      else{
-        $stmt = $db->query("SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias");
-      }
-
-      foreach ($stmt as $row) {
-        // Show the photo with the character if there is one, otherwise the framed photo
-        $foto = !empty($row['fotoMolduraCharacter']) ? $row['fotoMolduraCharacter'] : $row['fotoMoldura'];
-        $array_fotos[] = UPLOADS_DIR . $row['categoria'] . $foto;
-        $array_observacoes[] = $row['observacoes'];
-      }
-
-      // Escape quotes and < > & so the JSON can't break out of the HTML attribute
-      $json_flags = JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP;
-      $json_fotos = json_encode($array_fotos, $json_flags);
-      $json_observacoes = json_encode($array_observacoes, $json_flags);
-    ?>
-    <input type="hidden" id="imagePaths" value='<?php echo $json_fotos; ?>'>
-    <input type="hidden" id="observacoes" value='<?php echo $json_observacoes; ?>'>
-
-    <script>document.addEventListener("DOMContentLoaded", showMoreImages);</script>
-
-  <!-- <div class="w3-third">
-    <img src="molduras/frame.png" style="width:100%" onclick="onClick(this)" alt="A boy surrounded by beautiful nature">
-    <img src="molduras/frame.png" style="width:100%" onclick="onClick(this)" alt="What a beautiful scenery this sunset">
-    <img src="molduras/frame.png" style="width:100%" onclick="onClick(this)" alt="The Beach. Me. Alone. Beautiful">
-  </div> -->
-  </div>
-  
-  <!-- Pagination -->
-  <div id="divMais" class="w3-center ver-mais" style="max-height:4vh;" onclick="showMoreImages()">
-    <span>Mostrar mais fotos!</span>
-  </div>
-  
-  <!-- Modal for full size images on click-->
-  <div id="modal01" class="w3-modal" style="padding-top:0" onclick="this.style.display='none'">
-    <span class="w3-button w3-black w3-xlarge w3-display-topright">×</span>
-    <div class="w3-modal-content w3-animate-zoom w3-center w3-transparent w3-padding-64">
-      <img id="img01" class="w3-image">
-      <p id="caption"></p>
-      <a id="downloadButton" href="path/to/image.jpg" download>
-        <button class="downloadButton" >Download</button>
-      </a>
+  <header class="bg-white">
+    <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-5">
+      <img src="assets/logo_ExpoCIC.png" alt="ExpoCIC 2023" class="h-12 w-auto sm:h-14">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Olha o passarinho!</h1>
+        <p class="text-sm text-zinc-500">ExpoCIC 2023 · Banca de Informática</p>
+      </div>
     </div>
-  </div>
-<!-- End page content -->
-</div>
+    <div class="h-1 bg-linear-to-r from-brand to-accent"></div>
+  </header>
 
+  <!-- Categories -->
+  <nav aria-label="Categorias" class="sticky top-0 z-10 border-b border-zinc-200 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex max-w-7xl gap-2 overflow-x-auto px-4 py-3 [scrollbar-width:none]">
+      <a href="./" class="<?= $categoriaAtual === '' ? $chipAtivo : $chipInativo ?>">Todas</a>
+      <?php foreach ($categorias as $categoria): ?>
+        <a href="<?= e('?categoria=' . urlencode($categoria)) ?>"
+           class="<?= $categoria === $categoriaAtual ? $chipAtivo : $chipInativo ?>"><?= e($categoria) ?></a>
+      <?php endforeach; ?>
+    </div>
+  </nav>
+
+  <main class="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
+    <h2 class="mb-4 text-lg font-semibold">
+      <?= $categoriaAtual === '' ? 'Todas as fotos' : e($categoriaAtual) ?>
+      <span class="font-normal text-zinc-400">(<?= count($fotos) ?>)</span>
+    </h2>
+
+    <?php if (count($fotos) === 0): ?>
+      <p class="rounded-xl border border-dashed border-zinc-300 bg-white px-6 py-16 text-center text-zinc-500">
+        Ainda não há fotos nesta categoria.
+      </p>
+    <?php else: ?>
+      <!-- Photo grid (filled by gallery.js) -->
+      <div id="gallery" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"></div>
+
+      <div class="mt-8 text-center">
+        <button id="show-more" type="button"
+                class="hidden rounded-full border border-zinc-300 bg-white px-6 py-2 text-sm font-medium text-zinc-700 shadow-sm transition-colors hover:border-brand hover:text-brand">
+          Mostrar mais fotos
+        </button>
+      </div>
+    <?php endif; ?>
+  </main>
+
+  <footer class="border-t border-zinc-200 bg-white py-6 text-center text-sm text-zinc-500">
+    Afonso Saraiva e Gabriel Sousa · ExpoCIC 2023
+  </footer>
+
+  <!-- Lightbox -->
+  <div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/90 p-4"
+       role="dialog" aria-modal="true" aria-label="Foto">
+    <button id="lightbox-close" type="button" aria-label="Fechar"
+            class="absolute top-4 right-4 rounded-full p-2 text-3xl leading-none text-white/80 hover:bg-white/10 hover:text-white">&times;</button>
+    <button id="lightbox-prev" type="button" aria-label="Foto anterior"
+            class="absolute left-2 rounded-full px-3 py-1 text-5xl text-white/80 hover:bg-white/10 hover:text-white sm:left-6">&lsaquo;</button>
+
+    <figure class="flex max-h-full flex-col items-center gap-4">
+      <img id="lightbox-image" src="" alt="" class="max-h-[80vh] w-auto rounded-lg shadow-2xl">
+      <figcaption class="flex items-center gap-4">
+        <a id="lightbox-download" href="" download
+           class="rounded-full bg-brand px-6 py-2 text-sm font-semibold text-white shadow transition-colors hover:bg-brand-dark">Descarregar</a>
+        <span id="lightbox-counter" class="text-sm text-white/70"></span>
+      </figcaption>
+    </figure>
+
+    <button id="lightbox-next" type="button" aria-label="Foto seguinte"
+            class="absolute right-2 rounded-full px-3 py-1 text-5xl text-white/80 hover:bg-white/10 hover:text-white sm:right-6">&rsaquo;</button>
+  </div>
+
+  <!-- Photo list for gallery.js (escaped so it can't break out of the script tag) -->
+  <script id="photos-data" type="application/json"><?= json_encode($fotos, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?></script>
 </body>
 </html>

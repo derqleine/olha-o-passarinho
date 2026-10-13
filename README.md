@@ -18,7 +18,7 @@ The project was recovered in 2026 so it can run again, locally with Docker or on
 - 15 characters, picked by the colour detected in the top-left corner (HSV hue)
 - Each photo saved in up to 3 versions: original, with frame, and with frame and character
 - Automatic upload to a PHP server, with each photo recorded in a MySQL database
-- Web gallery with category filter, "show more" pagination and download button
+- Web gallery with category filter, "show more" pagination and a lightbox with keyboard navigation and download
 - HSV calibration tool to tune the colour ranges
 
 ## How it works
@@ -40,7 +40,7 @@ The project was recovered in 2026 so it can run again, locally with Docker or on
 ## Tech stack
 
 - **Photo booth:** Python, OpenCV, Requests, uv
-- **Web:** PHP 8, HTML/CSS (W3.CSS), JavaScript
+- **Web:** PHP 8, Tailwind CSS, JavaScript
 - **Database:** MariaDB / MySQL
 - **Development environment:** Docker Compose (PHP + Apache, MariaDB, Adminer)
 
@@ -111,6 +111,18 @@ uv run olha_o_passarinho.py
 ```
 
 `OLHA_CAMERA` also accepts a camera number (default `0`), useful when there is more than one camera.
+
+### Changing the gallery design
+
+The gallery is styled with [Tailwind CSS](https://tailwindcss.com). The generated `web/assets/css/style.css` is committed, so Node.js is only needed to change the design:
+
+```bash
+npm install
+npm run dev      # rebuilds the CSS on every change
+npm run build    # minified build before committing
+```
+
+The theme colours are defined in `web/assets/css/input.css`.
 
 ## Deploying to a server
 
