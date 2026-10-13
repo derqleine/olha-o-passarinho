@@ -12,6 +12,12 @@ os.environ['OPENCV_IO_ENABLE_WARNINGS'] = "FALSE"
 # environment variable, e.g. https://example.com/olha-o-passarinho
 SERVER_URL = os.environ.get("OLHA_SERVER_URL", "http://localhost:8000").rstrip("/")
 
+# Camera to use: a webcam number (default 0) or the path to a video file,
+# e.g. OLHA_CAMERA=test_video.mp4 (see make_test_video.py)
+CAMERA = os.environ.get("OLHA_CAMERA", "0")
+if not CAMERA.isdigit():
+    CAMERA = os.path.abspath(CAMERA)
+
 # Always work from the script's folder so molduras/ is found
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 for pasta in ("fotosDefault", "fotosMoldura", "fotosMolduraCharacter"):
@@ -145,17 +151,23 @@ def main():
                 haveCharacter = False
 
         ret, frame = cap.read()
+
+        if not ret and isVideo:
+            # End of the video: start again from the beginning
+            cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            continue
+
+        if not ret:
+            print("Erro a conseguir o frame")
+            break
+
         hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
         height, width, _ = frame.shape
 
         frameCamaraAtual = frame
 
-        key = cv2.waitKey(1)
-
-        if not ret:
-            print("Erro a conseguir o frame")
-            break
+        key = cv2.waitKey(frameDelay)
 
         if key % 256 == 27:
             # ESC pressed
@@ -322,9 +334,16 @@ def main():
 if __name__ == "__main__":
     print("A abrir projeto...")
     print("Servidor: " + SERVER_URL)
-    cap = cv2.VideoCapture(0)
+    print("Câmara: " + CAMERA)
+    isVideo = not CAMERA.isdigit()
+    cap = cv2.VideoCapture(CAMERA if isVideo else int(CAMERA))
+    if not cap.isOpened():
+        print("Erro a abrir a câmara/vídeo: " + CAMERA)
+        raise SystemExit(1)
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+    # Play videos at their normal speed (the webcam sets its own pace)
+    frameDelay = int(1000 / (cap.get(cv2.CAP_PROP_FPS) or 30)) if isVideo else 1
 
     main()
 
