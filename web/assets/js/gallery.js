@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const button = document.createElement("button");
       button.type = "button";
       button.className =
-        "group block overflow-hidden rounded-xl bg-zinc-200 shadow-sm ring-1 ring-zinc-200 transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
+        "group block overflow-hidden rounded-lg bg-zinc-200 shadow-sm ring-1 ring-zinc-200 transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
       button.setAttribute("aria-label", `Abrir foto ${i + 1}`);
       button.addEventListener("click", () => openLightbox(i));
 

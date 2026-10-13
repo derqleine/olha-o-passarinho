@@ -49,10 +49,10 @@ $chipInativo = $chip . ' bg-zinc-100 text-zinc-700 hover:bg-zinc-200';
 
   <header class="bg-white">
     <div class="mx-auto flex max-w-7xl items-center gap-4 px-4 py-5">
-      <img src="assets/logo_ExpoCIC.png" alt="ExpoCIC 2023" class="h-12 w-auto sm:h-14">
+      <img src="assets/logo_ExpoCIC_header.png" alt="ExpoCIC 2023" class="h-14 w-auto sm:h-30">
       <div>
-        <h1 class="text-2xl font-bold tracking-tight sm:text-3xl">Olha o passarinho!</h1>
-        <p class="text-sm text-zinc-500">ExpoCIC 2023 · Banca de Informática</p>
+        <h1 class="text-2xl font-bold tracking-tight sm:text-4xl">Olha o passarinho!</h1>
+        <p class="text-sm text-zinc-500 sm:text-base">ExpoCIC 2023 · Banca de Informática</p>
       </div>
     </div>
     <div class="h-1 bg-linear-to-r from-brand to-accent"></div>
