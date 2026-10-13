@@ -117,6 +117,16 @@ def categoria():
     return categoriaEscolhida
 
 
+def perguntarSimNao(pergunta):
+    respostasSim = ("s", "sim", "y", "yes")
+    respostasNao = ("n", "nao", "não", "no")
+
+    resposta = input(pergunta).strip().lower()
+    while (resposta not in respostasSim + respostasNao):
+        resposta = input("Responde sim ou não [S/N]\n").strip().lower()
+    return resposta in respostasSim
+
+
 def main():
 
     perguntar = True
@@ -126,8 +136,7 @@ def main():
         if (perguntar):
             perguntar = False
 
-            criar = input("Queres criar foto com alguém? [S/N]\n")
-            if (criar == "S"):
+            if (perguntarSimNao("Queres criar foto com alguém? [S/N]\n")):
 
                 print("Ok, personagem será escolhido por cor!")
                 haveCharacter = True
