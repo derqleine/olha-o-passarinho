@@ -1,0 +1,49 @@
+# Ambiente de desenvolvimento: galeria web (PHP), base de dados (MariaDB) e Adminer.
+#   docker compose up -d     -> ligar
+#   docker compose down      -> desligar
+# Passwords: valores por defeito abaixo, ou num ficheiro .env (ver .env.example).
+
+services:
+  web:
+    build: docker/web
+    ports:
+      - "8000:80"                # galeria: http://localhost:8000
+    volumes:
+      - ./web:/var/www/html      # alterações em web/ aparecem logo
+    environment:
+      DB_HOST: db
+      DB_USER: ${DB_USER:-olha}
+      DB_PASSWORD: ${DB_PASSWORD:-olha}
+      DB_NAME: polaroidexpocic
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mariadb:11.8
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: polaroidexpocic
+      MARIADB_USER: ${DB_USER:-olha}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-olha}
+    volumes:
+      - db-data:/var/lib/mysql
+      # Importado automaticamente só na primeira vez (com o volume vazio)
+      - ./database/polaroidexpocic.sql:/docker-entrypoint-initdb.d/01-esquema.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  adminer:
+    image: adminer:5
+    ports:
+      - "8080:8080"              # gerir a BD: http://localhost:8080 (servidor: db)
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on:
+      - db
+
+volumes:
+  db-data:

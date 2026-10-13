@@ -15,3 +15,6 @@ web/config.php
 
 # Fotos recebidas pelo servidor
 web/uploads/
+
+# Passwords do Docker (ver .env.example)
+.env
