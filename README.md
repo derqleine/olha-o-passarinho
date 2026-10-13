@@ -139,3 +139,9 @@ olha-o-passarinho/
 
 - Colégio Interno dos Carvalhos and the ExpoCIC 2023 organisation.
 - The character images belong to their respective owners and were used in a non-commercial school context.
+
+## License
+
+The source code is licensed under the [MIT License](LICENSE).
+
+The character images, the ExpoCIC and school logos are **not** covered by this license and belong to their respective owners.
