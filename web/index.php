@@ -153,25 +153,18 @@ function onClick(element) {
     <a href="?categoria=Coletivo" onclick="w3_close()" class="w3-bar-item w3-button">Coletivo</a> 
     <?php
     
-      require file_exists(__DIR__ . '/config.php') ? __DIR__ . '/config.php' : __DIR__ . '/config.example.php';
-
-      $conn = new mysqli(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_NAME);
-
-      // Check for errors
-      if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-      }
+      require __DIR__ . '/db.php';
+      $db = getDb();
 
       // retrieve distinct categories from the fotografias table
-      $sql = "SELECT DISTINCT categoria FROM fotografias";
-      $result = $conn->query($sql);
+      $categorias = $db->query("SELECT DISTINCT categoria FROM fotografias")->fetchAll(PDO::FETCH_COLUMN);
 
       // check for results
-      if ($result->num_rows > 0) {
+      if (count($categorias) > 0) {
         // loop through results and print each category
-        while ($row = $result->fetch_assoc()) {
-          $row['categoria'] = str_replace('/', '', $row['categoria']);
-          echo '<a href="?categoria=' . $row['categoria'] . '" onclick="w3_close()" class="w3-bar-item w3-button">' . $row['categoria'] . '</a>';
+        foreach ($categorias as $categoria) {
+          $categoria = str_replace('/', '', $categoria);
+          echo '<a href="?categoria=' . $categoria . '" onclick="w3_close()" class="w3-bar-item w3-button">' . $categoria . '</a>';
         }
       } else {
         echo "No categories found.";
@@ -207,57 +200,26 @@ function onClick(element) {
     
     <?php 
 
-      $images = array();
       $array_fotos = array();
-      $array_fotoMolduraCharacter = array();
       $array_observacoes = array();
       // Make the query to the database
       if (isset($_GET['categoria']) && $_GET['categoria'] != "Coletivo") {
-        $categoria = mysqli_real_escape_string($conn, $_GET['categoria']);
-        $categoria = $categoria . "/";
-        // Prepare the SQL statement
-        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE categoria = ?";
-      
-        // Prepare the statement and bind the 'categoria' parameter
-        $stmt = mysqli_prepare($conn, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $categoria);
-      
-        // Execute the query
-        mysqli_stmt_execute($stmt);
-      
-        // Bind the result variables
-        mysqli_stmt_bind_result($stmt, $categoria_result, $fotoMoldura_result, $fotoMolduraCharacter_result, $observacoes_result);
-        
-        $iterator = 0;
-        
-        while (mysqli_stmt_fetch($stmt)) {
-          // Show the photo with the character if there is one, otherwise the framed photo
-          $foto = !empty($fotoMolduraCharacter_result) ? $fotoMolduraCharacter_result : $fotoMoldura_result;
-          $array_fotos[$iterator] = UPLOADS_DIR . $categoria_result . $foto;
-          $array_observacoes[$iterator] = $observacoes_result;
-          $iterator++;
-        }
-        mysqli_stmt_close($stmt);
+        $stmt = $db->prepare("SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE categoria = ?");
+        $stmt->execute([$_GET['categoria'] . "/"]);
       }
       else{
-        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias";
-        $result = mysqli_query($conn, $sql);
+        $stmt = $db->query("SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias");
+      }
 
-        $iterator = 0;
-
-        while ($row = mysqli_fetch_assoc($result)) {
-
-          // Show the photo with the character if there is one, otherwise the framed photo
-          $foto = !empty($row['fotoMolduraCharacter']) ? $row['fotoMolduraCharacter'] : $row['fotoMoldura'];
-          $array_fotos[$iterator] = UPLOADS_DIR . $row['categoria'] . $foto;
-          $array_observacoes[$iterator] = $row['observacoes'];
-          $iterator++;
-        }
+      foreach ($stmt as $row) {
+        // Show the photo with the character if there is one, otherwise the framed photo
+        $foto = !empty($row['fotoMolduraCharacter']) ? $row['fotoMolduraCharacter'] : $row['fotoMoldura'];
+        $array_fotos[] = UPLOADS_DIR . $row['categoria'] . $foto;
+        $array_observacoes[] = $row['observacoes'];
       }
 
       $json_fotos = json_encode($array_fotos);
       $json_observacoes = json_encode($array_observacoes);
-      $conn->close();
     ?>
     <input type="hidden" id="imagePaths" value='<?php echo $json_fotos; ?>'>
     <input type="hidden" id="observacoes" value='<?php echo $json_observacoes; ?>'>

@@ -125,7 +125,7 @@ uv run olha_o_passarinho.py
 <details>
 <summary>Running locally without Docker (XAMPP or PHP + MySQL)</summary>
 
-Import `database/polaroidexpocic.sql` into MySQL/MariaDB (user `root` with no password by default) and start the web server with `php -S localhost:8000 -t web`. The `mysqli` extension is required.
+Import `database/polaroidexpocic.sql` into MySQL/MariaDB (user `root` with no password by default) and start the web server with `php -S localhost:8000 -t web`. The `pdo_mysql` extension is required.
 
 </details>
 
