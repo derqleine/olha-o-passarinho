@@ -115,12 +115,15 @@ def categoria():
     for categoria in categoriasExistentes:
         print("\t- " + categoria)
 
-    categoriaEscolhida = input("\nEscolhe uma das categorias disponíveis:\n")
+    # Ignore spaces and case, but always return the official name (e.g. "12if" -> "12IF")
+    categoriasPorNome = {c.lower(): c for c in categoriasExistentes}
 
-    while (categoriaEscolhida not in categoriasExistentes):
+    categoriaEscolhida = input("\nEscolhe uma das categorias disponíveis:\n").strip().lower()
+
+    while (categoriaEscolhida not in categoriasPorNome):
         categoriaEscolhida = input(
-            "\nEscolhe uma das categorias disponíveis a anterior não existe!\n")
-    return categoriaEscolhida
+            "\nEscolhe uma das categorias disponíveis a anterior não existe!\n").strip().lower()
+    return categoriasPorNome[categoriaEscolhida]
 
 
 def perguntarSimNao(pergunta):
