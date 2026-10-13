@@ -1,7 +1,11 @@
 # Fotos tiradas com a webcam (geradas ao correr o script)
-IMSIexpoCIC/fotosDefault/
-IMSIexpoCIC/fotosMoldura/
-IMSIexpoCIC/fotosMolduraCharacter/
+python/fotosDefault/
+python/fotosMoldura/
+python/fotosMolduraCharacter/
 
 # Ficheiros guardados só localmente
 _local/
+
+# Python
+__pycache__/
+.venv/
