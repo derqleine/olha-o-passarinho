@@ -297,7 +297,6 @@ def main():
             overlap = "molduras/1.png"
             if (haveCharacter):
                 frameCamaraAtual = overlapCharacter(frame, overlap)
-        print(hue_value)
         pixel_center_bgr = frameCamaraAtual[cy, cx]
         b, g, r = int(pixel_center_bgr[0]), int(
             pixel_center_bgr[1]), int(pixel_center_bgr[2])

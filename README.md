@@ -126,7 +126,6 @@ olha-o-passarinho/
 ## Known issues
 
 - The "Mostrar mais fotos!" (show more) button stays visible when there are no more photos.
-- The script prints the detected hue on every frame.
 - The app's interface is in Portuguese.
 
 ## Authors
