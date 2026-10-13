@@ -1,29 +1,28 @@
-####################### | Bibliotecas que tem de ter |#############################
-#                                                                                 #
-#                       pip install opencv-contrib-python                         #
-#           pip install mysql-connector-python(deixou de ser necessária)          #
-#                       pip install requests                                      #
-#                                                                                 #
-###################################################################################
+# Dependências: pip install -r requirements.txt
 
 import cv2
 import time as time_
 import numpy as np
-import mysql.connector as mysql
 import requests
 import os
 os.environ['OPENCV_IO_ENABLE_WARNINGS'] = "FALSE"
 
+# Endereço da pasta web/ no servidor. Por defeito usa o servidor local
+# (php -S localhost:8000 -t web). Para outro servidor, definir a variável
+# de ambiente OLHA_SERVER_URL, ex.: https://exemplo.pt/olha-o-passarinho
+SERVER_URL = os.environ.get("OLHA_SERVER_URL", "http://localhost:8000").rstrip("/")
 
-print("A abrir projeto...")
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
+# Trabalhar sempre a partir da pasta do script, para encontrar molduras/
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+for pasta in ("fotosDefault", "fotosMoldura", "fotosMolduraCharacter"):
+    os.makedirs(pasta, exist_ok=True)
+
+
+cap = None
 
 
 def sendToDB(categoriaEscolhida, fotoDefault, fotoMoldura, fotoMolduraCharacter="", observacoes="..."):
-    url = 'https://expressaodigital.pt/olhaopassarinho.pt/foto/upload_bd.php'
-    # url = 'https://atfaschapters.000webhostapp.com/upload_bd.php'
+    url = SERVER_URL + '/upload_bd.php'
     data = {
         'categoria': categoriaEscolhida,
         'fotoDefault': fotoDefault,
@@ -42,8 +41,7 @@ def sendToDB(categoriaEscolhida, fotoDefault, fotoMoldura, fotoMolduraCharacter=
 
 def sendToServer(fotoEnviar, pastaEnviar, tipo):
 
-    # url = 'https://atfaschapters.000webhostapp.com/upload.php'
-    url = 'https://expressaodigital.pt/olhaopassarinho.pt/foto/upload.php'
+    url = SERVER_URL + '/upload.php'
     files = {'image': open(fotoEnviar, 'rb')}
     data = {'folder': pastaEnviar}
     response = requests.post(url, files=files, data=data)
@@ -313,7 +311,14 @@ def main():
             "Fotos 12IF ExpoCIC Afonso Saraiva e Gabriel Sousa", frameCamaraAtual)
 
 
-main()
+if __name__ == "__main__":
+    print("A abrir projeto...")
+    print("Servidor: " + SERVER_URL)
+    cap = cv2.VideoCapture(0)
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 
-cap.release()
-cv2.destroyAllWindows()
+    main()
+
+    cap.release()
+    cv2.destroyAllWindows()

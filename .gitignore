@@ -9,3 +9,9 @@ _local/
 # Python
 __pycache__/
 .venv/
+
+# Configuração do servidor com passwords (ver web/config.example.php)
+web/config.php
+
+# Fotos recebidas pelo servidor
+web/uploads/

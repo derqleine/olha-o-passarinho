@@ -6,12 +6,9 @@ $fotoMoldura = $_POST['fotoMoldura'];
 $fotoMolduraCharacter = $_POST['fotoMolduraCharacter'];
 $observacoes = "...";
 #echo $categoria . " " . $fotoDefault. " " . $fotoMoldura. " " . $fotoMolduraCharacter. " " . $observacoes . "<br>Fim";
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "polaroidexpocic";
+require file_exists(__DIR__ . '/config.php') ? __DIR__ . '/config.php' : __DIR__ . '/config.example.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
+$conn = new mysqli(DB_SERVER, DB_USERNAME, DB_PASSWORD, DB_NAME);
 
 // Check connection
 if ($conn->connect_error) {

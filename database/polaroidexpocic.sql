@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `polaroidexpocic`
 --
+CREATE DATABASE IF NOT EXISTS `polaroidexpocic` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `polaroidexpocic`;
 
 -- --------------------------------------------------------
 
@@ -27,7 +29,7 @@ SET time_zone = "+00:00";
 -- Estrutura da tabela `fotografias`
 --
 
-CREATE TABLE `fotografias` (
+CREATE TABLE IF NOT EXISTS `fotografias` (
   `id` int(11) NOT NULL,
   `categoria` varchar(50) NOT NULL,
   `fotoDefault` varchar(50) DEFAULT NULL,

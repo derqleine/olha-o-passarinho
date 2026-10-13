@@ -155,14 +155,7 @@ function onClick(element) {
     <a href="?categoria=Coletivo" onclick="w3_close()" class="w3-bar-item w3-button">Coletivo</a> 
     <?php
     
-      // $servername = "localhost";
-      define('DB_SERVER','localhost');
-      define('DB_USERNAME','root');
-      define('DB_PASSWORD','');
-      define('DB_NAME','polaroidexpocic');
-      
-      
-    
+      require file_exists(__DIR__ . '/config.php') ? __DIR__ . '/config.php' : __DIR__ . '/config.example.php';
 
       $conn = new mysqli(DB_SERVER,DB_USERNAME,DB_PASSWORD,DB_NAME);
 
@@ -240,8 +233,8 @@ function onClick(element) {
         $iterator = 0;
         
         while (mysqli_stmt_fetch($stmt)) {
-          $array_fotos[$iterator] = $categoria_result . $fotoMoldura_result;
-          $array_fotos[$iterator+1] = $categoria_result . $fotoMolduraCharacter_result;
+          $array_fotos[$iterator] = UPLOADS_DIR . $categoria_result . $fotoMoldura_result;
+          $array_fotos[$iterator+1] = UPLOADS_DIR . $categoria_result . $fotoMolduraCharacter_result;
           $array_observacoes[$iterator] = $observacoes_result;
           $array_observacoes[$iterator+1] = $observacoes_result;
           $iterator += 2;
@@ -256,8 +249,8 @@ function onClick(element) {
 
         while ($row = mysqli_fetch_assoc($result)) {
 
-          $array_fotos[$iterator] = $row['categoria'] . $row['fotoMoldura'];
-          $array_fotos[$iterator+1] = $row['categoria'] . $row['fotoMolduraCharacter'];
+          $array_fotos[$iterator] = UPLOADS_DIR . $row['categoria'] . $row['fotoMoldura'];
+          $array_fotos[$iterator+1] = UPLOADS_DIR . $row['categoria'] . $row['fotoMolduraCharacter'];
           $array_observacoes[$iterator] = $row['observacoes'];
           $array_observacoes[$iterator+1] = $row['observacoes'];
           $iterator += 2;
