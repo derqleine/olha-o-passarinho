@@ -262,7 +262,7 @@ function onClick(element) {
     <input type="hidden" id="imagePaths" value='<?php echo $json_fotos; ?>'>
     <input type="hidden" id="observacoes" value='<?php echo $json_observacoes; ?>'>
 
-    <?php echo "<script>showMoreImages();</script>"; ?>
+    <script>document.addEventListener("DOMContentLoaded", showMoreImages);</script>
 
   <!-- <div class="w3-third">
     <img src="molduras/frame.png" style="width:100%" onclick="onClick(this)" alt="A boy surrounded by beautiful nature">

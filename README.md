@@ -125,8 +125,7 @@ olha-o-passarinho/
 
 ## Known issues
 
-- The "Mostrar mais fotos!" (show more) button stays visible when there are no more photos.
-- The app's interface is in Portuguese.
+- The app's interface is only in Portuguese.
 
 ## Authors
 
