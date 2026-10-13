@@ -1,9 +1,9 @@
 # Creates test_video.mp4: a grey 1280x720 video with a square in the top-left
 # corner that cycles through the 15 colours used to pick a character.
 # Lets you test the photo booth without a webcam:
-#   python make_test_video.py
+#   uv run make_test_video.py
 #   set OLHA_CAMERA=test_video.mp4      (Linux/macOS: export OLHA_CAMERA=test_video.mp4)
-#   python olha_o_passarinho.py
+#   uv run olha_o_passarinho.py
 
 import os
 

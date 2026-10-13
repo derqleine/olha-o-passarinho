@@ -1,0 +1,10 @@
+[project]
+name = "olha-o-passarinho"
+version = "1.0.0"
+description = "Webcam photo booth built with OpenCV for ExpoCIC 2023"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=2",
+    "opencv-python>=4.10",
+    "requests>=2.32",
+]

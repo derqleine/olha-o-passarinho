@@ -1,8 +1,7 @@
-# Dependencies: pip install -r requirements.txt
+# Run with: uv run olha_o_passarinho.py (or pip install -r requirements.txt)
 
 import cv2
 import time as time_
-import numpy as np
 import requests
 import os
 os.environ['OPENCV_IO_ENABLE_WARNINGS'] = "FALSE"

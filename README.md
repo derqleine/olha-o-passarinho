@@ -39,7 +39,7 @@ The project was recovered in 2026 so it can run again, locally with Docker or on
 
 ## Tech stack
 
-- **Photo booth:** Python, OpenCV, Requests
+- **Photo booth:** Python, OpenCV, Requests, uv
 - **Web:** PHP 8, HTML/CSS (W3.CSS), JavaScript
 - **Database:** MariaDB / MySQL
 - **Development environment:** Docker Compose (PHP + Apache, MariaDB, Adminer)
@@ -49,7 +49,7 @@ The project was recovered in 2026 so it can run again, locally with Docker or on
 ### Prerequisites
 
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- Python 3.10+
+- [uv](https://docs.astral.sh/uv/) (Python package manager), or Python 3.10+ with pip
 - A webcam
 
 ### Installation
@@ -69,20 +69,27 @@ docker compose up -d
 
 The database is created automatically from `database/polaroidexpocic.sql` on the first run. To change the passwords, copy `.env.example` to `.env`.
 
-Then set up the photo booth:
+### Usage
+
+Run the photo booth from the `python/` folder. On the first run, uv creates the virtual environment and installs the dependencies automatically:
+
+```bash
+cd python
+uv run olha_o_passarinho.py
+```
+
+<details>
+<summary>Using pip instead of uv</summary>
 
 ```bash
 cd python
 python -m venv .venv
 .venv\Scripts\activate        # Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt
-```
-
-### Usage
-
-```bash
 python olha_o_passarinho.py
 ```
+
+</details>
 
 1. Answer whether you want a photo with a character (`S`/`N`).
 2. Hold a coloured object in the top-left corner of the camera to pick a character.
@@ -98,9 +105,9 @@ To stop the containers, run `docker compose down`. Add `-v` to also delete the d
 Generate a test video with a square that cycles through the 15 colours, and use it instead of the webcam:
 
 ```bash
-python make_test_video.py
-set OLHA_CAMERA=test_video.mp4     # Linux/macOS: export OLHA_CAMERA=test_video.mp4
-python olha_o_passarinho.py
+uv run make_test_video.py
+set OLHA_CAMERA=test_video.mp4     # PowerShell: $env:OLHA_CAMERA="test_video.mp4"; Linux/macOS: export OLHA_CAMERA=test_video.mp4
+uv run olha_o_passarinho.py
 ```
 
 `OLHA_CAMERA` also accepts a camera number (default `0`), useful when there is more than one camera.
@@ -112,7 +119,7 @@ python olha_o_passarinho.py
 
   ```bash
   set OLHA_SERVER_URL=https://example.com/olha-o-passarinho
-  python olha_o_passarinho.py
+  uv run olha_o_passarinho.py
   ```
 
 <details>
