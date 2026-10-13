@@ -18,3 +18,6 @@ web/uploads/
 
 # Docker passwords (see .env.example)
 .env
+
+# Test video (created by python/make_test_video.py)
+python/test_video.mp4

@@ -93,6 +93,18 @@ The photos appear in the gallery at http://localhost:8000.
 
 To stop the containers, run `docker compose down`. Add `-v` to also delete the database.
 
+### Testing without a webcam
+
+Generate a test video with a square that cycles through the 15 colours, and use it instead of the webcam:
+
+```bash
+python make_test_video.py
+set OLHA_CAMERA=test_video.mp4     # Linux/macOS: export OLHA_CAMERA=test_video.mp4
+python olha_o_passarinho.py
+```
+
+`OLHA_CAMERA` also accepts a camera number (default `0`), useful when there is more than one camera.
+
 ## Deploying to a server
 
 - **Web:** upload the `web/` folder to a PHP host, import `database/polaroidexpocic.sql` and create `web/config.php` from `web/config.example.php` with your database credentials (`config.php` is git-ignored).
