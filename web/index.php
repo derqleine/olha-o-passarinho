@@ -164,7 +164,9 @@ function onClick(element) {
         // loop through results and print each category
         foreach ($categorias as $categoria) {
           $categoria = str_replace('/', '', $categoria);
-          echo '<a href="?categoria=' . $categoria . '" onclick="w3_close()" class="w3-bar-item w3-button">' . $categoria . '</a>';
+          // Escape the name so it can't inject HTML/JavaScript into the page
+          $link = htmlspecialchars('?categoria=' . urlencode($categoria));
+          echo '<a href="' . $link . '" onclick="w3_close()" class="w3-bar-item w3-button">' . htmlspecialchars($categoria) . '</a>';
         }
       } else {
         echo "No categories found.";
@@ -218,8 +220,10 @@ function onClick(element) {
         $array_observacoes[] = $row['observacoes'];
       }
 
-      $json_fotos = json_encode($array_fotos);
-      $json_observacoes = json_encode($array_observacoes);
+      // Escape quotes and < > & so the JSON can't break out of the HTML attribute
+      $json_flags = JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_HEX_AMP;
+      $json_fotos = json_encode($array_fotos, $json_flags);
+      $json_observacoes = json_encode($array_observacoes, $json_flags);
     ?>
     <input type="hidden" id="imagePaths" value='<?php echo $json_fotos; ?>'>
     <input type="hidden" id="observacoes" value='<?php echo $json_observacoes; ?>'>
