@@ -1,0 +1,13 @@
+{
+  "name": "olha-o-passarinho",
+  "private": true,
+  "description": "Builds the gallery CSS with Tailwind",
+  "scripts": {
+    "dev": "tailwindcss -i web/assets/css/input.css -o web/assets/css/style.css --watch",
+    "build": "tailwindcss -i web/assets/css/input.css -o web/assets/css/style.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss": "4.3.3"
+  }
+}

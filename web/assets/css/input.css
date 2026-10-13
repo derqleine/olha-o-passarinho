@@ -1,0 +1,13 @@
+/* Source for style.css. Build with: npm run build (or npm run dev while editing) */
+@import "tailwindcss" source(none);
+
+@source "../../index.php";
+@source "../js/gallery.js";
+
+/* Colours taken from the ExpoCIC 2023 frame. For a plainer look, replace them
+   with neutral colours, e.g. --color-brand: var(--color-zinc-800); */
+@theme {
+  --color-brand: #b61d6b;
+  --color-brand-dark: #8f1554;
+  --color-accent: #f5c400;
+}

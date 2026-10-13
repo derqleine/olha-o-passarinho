@@ -21,3 +21,6 @@ web/uploads/
 
 # Test video (created by python/make_test_video.py)
 python/test_video.mp4
+
+# Node (Tailwind CSS build)
+node_modules/
