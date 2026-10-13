@@ -216,7 +216,7 @@ function onClick(element) {
         $categoria = mysqli_real_escape_string($conn, $_GET['categoria']);
         $categoria = $categoria . "/";
         // Prepare the SQL statement
-        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE fotoMolduraCharacter != '' AND categoria = ?";
+        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE categoria = ?";
       
         // Prepare the statement and bind the 'categoria' parameter
         $stmt = mysqli_prepare($conn, $sql);
@@ -231,27 +231,27 @@ function onClick(element) {
         $iterator = 0;
         
         while (mysqli_stmt_fetch($stmt)) {
-          $array_fotos[$iterator] = UPLOADS_DIR . $categoria_result . $fotoMoldura_result;
-          $array_fotos[$iterator+1] = UPLOADS_DIR . $categoria_result . $fotoMolduraCharacter_result;
+          // Show the photo with the character if there is one, otherwise the framed photo
+          $foto = !empty($fotoMolduraCharacter_result) ? $fotoMolduraCharacter_result : $fotoMoldura_result;
+          $array_fotos[$iterator] = UPLOADS_DIR . $categoria_result . $foto;
           $array_observacoes[$iterator] = $observacoes_result;
-          $array_observacoes[$iterator+1] = $observacoes_result;
-          $iterator += 2;
+          $iterator++;
         }
         mysqli_stmt_close($stmt);
       }
       else{
-        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias WHERE fotoMolduraCharacter != ''";
+        $sql = "SELECT categoria,fotoMoldura,fotoMolduraCharacter,observacoes FROM fotografias";
         $result = mysqli_query($conn, $sql);
 
         $iterator = 0;
 
         while ($row = mysqli_fetch_assoc($result)) {
 
-          $array_fotos[$iterator] = UPLOADS_DIR . $row['categoria'] . $row['fotoMoldura'];
-          $array_fotos[$iterator+1] = UPLOADS_DIR . $row['categoria'] . $row['fotoMolduraCharacter'];
+          // Show the photo with the character if there is one, otherwise the framed photo
+          $foto = !empty($row['fotoMolduraCharacter']) ? $row['fotoMolduraCharacter'] : $row['fotoMoldura'];
+          $array_fotos[$iterator] = UPLOADS_DIR . $row['categoria'] . $foto;
           $array_observacoes[$iterator] = $row['observacoes'];
-          $array_observacoes[$iterator+1] = $row['observacoes'];
-          $iterator += 2;
+          $iterator++;
         }
       }
 
