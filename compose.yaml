@@ -1,15 +1,15 @@
-# Ambiente de desenvolvimento: galeria web (PHP), base de dados (MariaDB) e Adminer.
-#   docker compose up -d     -> ligar
-#   docker compose down      -> desligar
-# Passwords: valores por defeito abaixo, ou num ficheiro .env (ver .env.example).
+# Development environment: web gallery (PHP), database (MariaDB) and Adminer.
+#   docker compose up -d     -> start
+#   docker compose down      -> stop
+# Passwords: defaults below, or set them in a .env file (see .env.example).
 
 services:
   web:
     build: docker/web
     ports:
-      - "8000:80"                # galeria: http://localhost:8000
+      - "8000:80"                # gallery: http://localhost:8000
     volumes:
-      - ./web:/var/www/html      # alterações em web/ aparecem logo
+      - ./web:/var/www/html      # changes in web/ show up immediately
     environment:
       DB_HOST: db
       DB_USER: ${DB_USER:-olha}
@@ -28,7 +28,7 @@ services:
       MARIADB_PASSWORD: ${DB_PASSWORD:-olha}
     volumes:
       - db-data:/var/lib/mysql
-      # Importado automaticamente só na primeira vez (com o volume vazio)
+      # Imported automatically on the first run only (empty volume)
       - ./database/polaroidexpocic.sql:/docker-entrypoint-initdb.d/01-esquema.sql:ro
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
@@ -39,7 +39,7 @@ services:
   adminer:
     image: adminer:5
     ports:
-      - "8080:8080"              # gerir a BD: http://localhost:8080 (servidor: db)
+      - "8080:8080"              # database admin: http://localhost:8080 (server: db)
     environment:
       ADMINER_DEFAULT_SERVER: db
     depends_on:

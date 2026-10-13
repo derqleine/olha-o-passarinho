@@ -2,7 +2,7 @@
 require file_exists(__DIR__ . '/config.php') ? __DIR__ . '/config.php' : __DIR__ . '/config.example.php';
 
 if (isset($_POST['folder']) && isset($_FILES['image'])) {
-    // A categoria vira nome de pasta: só letras, números, - e _
+    // The category becomes a folder name: only letters, numbers, - and _
     $categoria = preg_replace('/[^A-Za-z0-9_-]/', '', $_POST['folder']);
     $nome = basename($_FILES['image']['name']);
     $extensao = strtolower(pathinfo($nome, PATHINFO_EXTENSION));

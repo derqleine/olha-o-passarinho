@@ -1,20 +1,20 @@
-# Fotos tiradas com a webcam (geradas ao correr o script)
+# Webcam photos (created when the script runs)
 python/fotosDefault/
 python/fotosMoldura/
 python/fotosMolduraCharacter/
 
-# Ficheiros guardados só localmente
+# Local-only files
 _local/
 
 # Python
 __pycache__/
 .venv/
 
-# Configuração do servidor com passwords (ver web/config.example.php)
+# Server configuration with passwords (see web/config.example.php)
 web/config.php
 
-# Fotos recebidas pelo servidor
+# Photos received by the server
 web/uploads/
 
-# Passwords do Docker (ver .env.example)
+# Docker passwords (see .env.example)
 .env

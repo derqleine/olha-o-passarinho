@@ -1,4 +1,4 @@
-# Dependências: pip install -r requirements.txt
+# Dependencies: pip install -r requirements.txt
 
 import cv2
 import time as time_
@@ -7,12 +7,12 @@ import requests
 import os
 os.environ['OPENCV_IO_ENABLE_WARNINGS'] = "FALSE"
 
-# Endereço da pasta web/ no servidor. Por defeito usa o servidor local
-# (php -S localhost:8000 -t web). Para outro servidor, definir a variável
-# de ambiente OLHA_SERVER_URL, ex.: https://exemplo.pt/olha-o-passarinho
+# URL of the web/ folder on the server. Defaults to the local server
+# (docker compose up). For another server, set the OLHA_SERVER_URL
+# environment variable, e.g. https://example.com/olha-o-passarinho
 SERVER_URL = os.environ.get("OLHA_SERVER_URL", "http://localhost:8000").rstrip("/")
 
-# Trabalhar sempre a partir da pasta do script, para encontrar molduras/
+# Always work from the script's folder so molduras/ is found
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 for pasta in ("fotosDefault", "fotosMoldura", "fotosMolduraCharacter"):
     os.makedirs(pasta, exist_ok=True)

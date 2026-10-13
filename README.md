@@ -1,91 +1,141 @@
 # Olha o passarinho! 📸
 
-Cabine fotográfica (*photobooth*) feita para a banca de informática da **ExpoCIC 2023**, a semana cultural do Colégio Interno dos Carvalhos, por **Afonso Saraiva** e **Gabriel Sousa** (12IF).
+A webcam photo booth built with Python and OpenCV for **ExpoCIC 2023**, with a PHP/MySQL web gallery where visitors can find and download their photos.
 
-O visitante coloca-se em frente à webcam e tira uma foto com a moldura da ExpoCIC. Se quiser, pode aparecer ao lado de uma personagem famosa, escolhida mostrando à câmara um objeto de uma determinada **cor** no canto superior esquerdo da imagem. As fotos são enviadas para um servidor e ficam disponíveis num site, organizadas por turma ou categoria.
+![Demo photo with the ExpoCIC frame and a character](docs/images/demo.jpg)
 
-> 🚧 Projeto original de março de 2023, recuperado para voltar a funcionar em localhost ou num servidor.
+## About
 
-## Como funciona
+*"Olha o passarinho!"* is the Portuguese equivalent of "Say cheese!". This project was built by two 12th grade students for the IT stand at **ExpoCIC 2023**, the cultural week of Colégio Interno dos Carvalhos (Portugal), in March 2023.
+
+Visitors stood in front of a webcam and took a photo with the event's frame. They could also appear next to a famous character, chosen by holding an object of a given **colour** in the top-left corner of the camera. Every photo was uploaded to a server and published on a website, organised by class or group.
+
+The project was recovered in 2026 so it can run again, locally with Docker or on a web server.
+
+## Features
+
+- Live webcam preview with the ExpoCIC frame
+- 15 characters, picked by the colour detected in the top-left corner (HSV hue)
+- Each photo saved in up to 3 versions: original, with frame, and with frame and character
+- Automatic upload to a PHP server, with each photo recorded in a MySQL database
+- Web gallery with category filter, "show more" pagination and download button
+- HSV calibration tool to tune the colour ranges
+
+## How it works
 
 ```
 ┌──────────────────────┐   upload.php    ┌──────────────────┐
-│  Script Python       │ ──────────────► │  Servidor PHP    │
+│  Python script       │ ──────────────► │  PHP server      │
 │  (webcam + OpenCV)   │   upload_bd.php │  + MySQL         │
 └──────────────────────┘ ──────────────► └────────┬─────────┘
                                                   │ index.php
                                                   ▼
-                                         Galeria de fotos (site)
+                                         Photo gallery (website)
 ```
 
-1. **`python/olha_o_passarinho.py`**: abre a webcam e lê a cor (HSV) do pixel do canto superior esquerdo para escolher uma de 15 personagens. Ao carregar em **Espaço**, pede a categoria (turma, visitantes, professores…) e gera até 3 versões da foto: original, com moldura e com moldura e personagem. **Esc** fecha o programa.
-2. **`web/upload.php`** recebe as imagens e **`web/upload_bd.php`** regista-as na base de dados.
-3. **`web/index.php`** mostra a galeria, com filtro por categoria e botão de download.
+1. **`python/olha_o_passarinho.py`** reads the hue of the top-left pixel to choose a character. Pressing **Space** asks for the category (class, visitors, teachers…) and creates the photos.
+2. **`web/upload.php`** receives the images and **`web/upload_bd.php`** stores them in the database.
+3. **`web/index.php`** shows the gallery.
 
-## Como correr (localhost)
+## Tech stack
 
-Requisitos: [Docker Desktop](https://www.docker.com/products/docker-desktop/), Python 3 e uma webcam.
+- **Photo booth:** Python, OpenCV, Requests
+- **Web:** PHP 8, HTML/CSS (W3.CSS), JavaScript
+- **Database:** MariaDB / MySQL
+- **Development environment:** Docker Compose (PHP + Apache, MariaDB, Adminer)
 
-**1. Galeria web e base de dados.** Na pasta do projeto:
+## Getting started
+
+### Prerequisites
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+- Python 3.10+
+- A webcam
+
+### Installation
+
+Clone the repository and start the web server and database:
 
 ```bash
+git clone https://github.com/derqleine/olha-o-passarinho.git
+cd olha-o-passarinho
 docker compose up -d
 ```
 
-| Serviço | Endereço |
+| Service | URL |
 |---|---|
-| Galeria | http://localhost:8000 |
-| Adminer (gerir a base de dados) | http://localhost:8080 (servidor `db`, utilizador `olha`, password `olha`) |
+| Gallery | http://localhost:8000 |
+| Adminer (database admin) | http://localhost:8080 (server `db`, user `olha`, password `olha`) |
 
-Na primeira vez, a base de dados é criada automaticamente a partir de `database/polaroidexpocic.sql`. Para desligar: `docker compose down`. Para apagar também os dados: `docker compose down -v`. Para mudar as passwords, copiar `.env.example` para `.env`.
+The database is created automatically from `database/polaroidexpocic.sql` on the first run. To change the passwords, copy `.env.example` to `.env`.
 
-**2. Script da cabine.** Noutro terminal:
+Then set up the photo booth:
 
 ```bash
 cd python
 python -m venv .venv
-.venv\Scripts\activate        # Windows (Linux/macOS: source .venv/bin/activate)
+.venv\Scripts\activate        # Linux/macOS: source .venv/bin/activate
 pip install -r requirements.txt
+```
+
+### Usage
+
+```bash
 python olha_o_passarinho.py
 ```
 
-Mostrar uma cor ao canto superior esquerdo da câmara para escolher a personagem, **Espaço** para tirar a foto, **Esc** para sair.
+1. Answer whether you want a photo with a character (`S`/`N`).
+2. Hold a coloured object in the top-left corner of the camera to pick a character.
+3. Press **Space** to take the photo and choose a category.
+4. Press **Esc** to quit.
 
-<details>
-<summary>Sem Docker (XAMPP ou PHP + MySQL instalados)</summary>
+The photos appear in the gallery at http://localhost:8000.
 
-Importar `database/polaroidexpocic.sql` no MySQL/MariaDB (utilizador `root` sem password, por defeito) e arrancar o servidor web com `php -S localhost:8000 -t web`. É necessária a extensão `mysqli`.
+To stop the containers, run `docker compose down`. Add `-v` to also delete the database.
 
-</details>
+## Deploying to a server
 
-### Usar num servidor
-
-- **Web:** copiar a pasta `web/` para o alojamento, importar `database/polaroidexpocic.sql` e criar `web/config.php` a partir de `web/config.example.php` com os dados da base de dados. O `config.php` não vai para o git.
-- **Python:** indicar o endereço do servidor na variável de ambiente `OLHA_SERVER_URL`:
+- **Web:** upload the `web/` folder to a PHP host, import `database/polaroidexpocic.sql` and create `web/config.php` from `web/config.example.php` with your database credentials (`config.php` is git-ignored).
+- **Photo booth:** point the script to your server with the `OLHA_SERVER_URL` environment variable:
 
   ```bash
-  set OLHA_SERVER_URL=https://exemplo.pt/olha-o-passarinho
+  set OLHA_SERVER_URL=https://example.com/olha-o-passarinho
   python olha_o_passarinho.py
   ```
 
-## Estrutura
+<details>
+<summary>Running locally without Docker (XAMPP or PHP + MySQL)</summary>
 
-| Pasta | Conteúdo |
-|---|---|
-| `python/` | Script da cabine, calibrador de cores HSV (`hsv_color_picker.py`) e imagens das molduras e personagens |
-| `web/` | Site da galeria e endpoints de upload (PHP) |
-| `database/` | Esquema da base de dados (MariaDB/MySQL) |
-| `docker/`, `compose.yaml` | Ambiente Docker: PHP + Apache, MariaDB e Adminer |
-| `design/` | Material de trabalho: tabela de cores, personagens originais e recortadas, projetos Photoshop da moldura |
-| `docs/` | Descrição original do projeto entregue para a ExpoCIC |
+Import `database/polaroidexpocic.sql` into MySQL/MariaDB (user `root` with no password by default) and start the web server with `php -S localhost:8000 -t web`. The `mysqli` extension is required.
 
-## Tecnologias
+</details>
 
-Python · OpenCV · PHP · MariaDB/MySQL · HTML/CSS (W3.CSS + Bootstrap) · Docker
+## Project structure
 
-## Autores
+```
+olha-o-passarinho/
+├── python/            # Photo booth script, HSV colour picker, frame and character images
+├── web/               # Gallery website and upload endpoints (PHP)
+├── database/          # Database schema
+├── docker/            # Dockerfile for the PHP server
+├── design/            # Working material: colour table, original and cut-out characters, Photoshop files
+├── docs/              # Original project description (Portuguese) and README images
+└── compose.yaml       # Docker Compose setup
+```
 
-- Afonso Saraiva
-- Gabriel Sousa
+## Known issues
 
-As imagens das personagens pertencem aos respetivos autores e foram usadas num contexto escolar, sem fins lucrativos.
+- Some categories are merged due to missing commas (`"11AJ" "11BT1"` and `"12AJ" "12BT1"`).
+- The "Mostrar mais fotos!" (show more) button stays visible when there are no more photos.
+- The script prints the detected hue on every frame.
+- The app's interface is in Portuguese.
+
+## Authors
+
+- **Afonso Saraiva**
+- **Gabriel Sousa** ([@derqleine](https://github.com/derqleine))
+
+## Acknowledgements
+
+- Colégio Interno dos Carvalhos and the ExpoCIC 2023 organisation.
+- The character images belong to their respective owners and were used in a non-commercial school context.
