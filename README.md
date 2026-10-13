@@ -125,7 +125,6 @@ olha-o-passarinho/
 
 ## Known issues
 
-- Some categories are merged due to missing commas (`"11AJ" "11BT1"` and `"12AJ" "12BT1"`).
 - The "Mostrar mais fotos!" (show more) button stays visible when there are no more photos.
 - The script prints the detected hue on every frame.
 - The app's interface is in Portuguese.

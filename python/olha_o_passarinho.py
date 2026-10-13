@@ -102,8 +102,8 @@ def categoria():
     categoriasExistentes = [
 
         "10T2", "E1", "E2", "G1", "H1", "H2", "H3", "S1", "S2", "S3", "S4", "S5", "T1", "T2", "T3",
-        "11AD1", "11AD2", "11AG", "11AJ" "11BT1", "11BT2", "11CIG1", "11CIG2", "11EA", "11ET", "11IF", "11LR", "11ME", "11PT", "11QA",
-        "12AD1", "12AD2", "12AG", "12AJ" "12BT1", "12BT2", "12CIG1", "12CIG2", "12EA", "12ET", "12IF", "12LR", "12ME", "12PT", "12QA",
+        "11AD1", "11AD2", "11AG", "11AJ", "11BT1", "11BT2", "11CIG1", "11CIG2", "11EA", "11ET", "11IF", "11LR", "11ME", "11PT", "11QA",
+        "12AD1", "12AD2", "12AG", "12AJ", "12BT1", "12BT2", "12CIG1", "12CIG2", "12EA", "12ET", "12IF", "12LR", "12ME", "12PT", "12QA",
         "Visitantes", "Convidados", "Professores", "Colaboradores"
     ]
     for categoria in categoriasExistentes:
